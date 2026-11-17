@@ -1,0 +1,42 @@
+[project]
+name = "hybrid-product-search"
+version = "0.1.0"
+description = "Reproducible PostgreSQL FTS, E5/pgvector and BGE product retrieval"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+  "psycopg[binary,pool]>=3.2,<4",
+  "pgvector>=0.3,<1",
+  "numpy>=2.1,<3",
+  "onnxruntime>=1.20,<2",
+  "transformers>=4.46,<5",
+  "huggingface-hub>=0.26,<1",
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.9,<1"]
+
+[project.scripts]
+hybrid-search = "hybrid_search.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hybrid_search"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: requires a disposable PostgreSQL/pgvector database"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]

@@ -1,0 +1,21 @@
+{
+  "embedding": {
+    "family": "intfloat/e5-small-v2",
+    "repository": "Xenova/e5-small-v2",
+    "revision": "02af79985278377e65c724a76275707cb0333c70",
+    "file": "onnx/model_quantized.onnx",
+    "dimensions": 384,
+    "max_tokens": 512,
+    "pooling": "attention_mask_mean_l2",
+    "query_prefix": "query: ",
+    "passage_prefix": "passage: "
+  },
+  "reranker": {
+    "family": "BAAI/bge-reranker-base",
+    "repository": "Xenova/bge-reranker-base",
+    "revision": "280bcc27a84e0b898c251e06fddb25171bd9b101",
+    "file": "onnx/model_quantized.onnx",
+    "max_tokens": 512,
+    "score": "raw_logit"
+  }
+}

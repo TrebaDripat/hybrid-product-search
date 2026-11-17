@@ -1,0 +1,268 @@
+[
+  {
+    "id": "dev-01",
+    "split": "development",
+    "query": "noise cancelling headphones",
+    "filters": {},
+    "relevance": {
+      "AUD-ANC": 3
+    }
+  },
+  {
+    "id": "dev-02",
+    "split": "development",
+    "query": "wrist friendly mouse",
+    "filters": {
+      "category": "desk"
+    },
+    "relevance": {
+      "DESK-VERT": 3
+    }
+  },
+  {
+    "id": "dev-03",
+    "split": "development",
+    "query": "fast portable 1 TB drive",
+    "filters": {
+      "category": "storage"
+    },
+    "relevance": {
+      "STO-SSD1": 3,
+      "STO-SSD2": 2
+    }
+  },
+  {
+    "id": "dev-04",
+    "split": "development",
+    "query": "pour over water temperature",
+    "filters": {
+      "category": "kitchen"
+    },
+    "relevance": {
+      "KIT-KETTLE": 3
+    }
+  },
+  {
+    "id": "dev-05",
+    "split": "development",
+    "query": "charge laptop without wall socket",
+    "filters": {},
+    "relevance": {
+      "TRV-POWER": 3
+    }
+  },
+  {
+    "id": "dev-06",
+    "split": "development",
+    "query": "headphones for jogging in rain",
+    "filters": {
+      "in_stock": true
+    },
+    "relevance": {
+      "AUD-SPORT": 3,
+      "AUD-OPEN": 1
+    }
+  },
+  {
+    "id": "eval-01",
+    "split": "evaluation",
+    "query": "make airplane engine noise quieter",
+    "filters": {
+      "category": "audio"
+    },
+    "relevance": {
+      "AUD-ANC": 3
+    }
+  },
+  {
+    "id": "eval-02",
+    "split": "evaluation",
+    "query": "hear traffic while listening to music",
+    "filters": {
+      "category": "audio"
+    },
+    "relevance": {
+      "AUD-OPEN": 3
+    }
+  },
+  {
+    "id": "eval-03",
+    "split": "evaluation",
+    "query": "headset with a microphone on a boom under 60 dollars",
+    "filters": {
+      "category": "audio",
+      "max_price_cents": 6000
+    },
+    "relevance": {
+      "AUD-GAME": 3
+    }
+  },
+  {
+    "id": "eval-04",
+    "split": "evaluation",
+    "query": "play music by the pool",
+    "filters": {},
+    "relevance": {
+      "AUD-SPEAKER": 3
+    }
+  },
+  {
+    "id": "eval-05",
+    "split": "evaluation",
+    "query": "connect two external screens to my laptop",
+    "filters": {
+      "category": "desk"
+    },
+    "relevance": {
+      "DESK-DOCK": 3
+    }
+  },
+  {
+    "id": "eval-06",
+    "split": "evaluation",
+    "query": "one 4K screen plus wired internet and SD reader",
+    "filters": {
+      "category": "desk",
+      "max_price_cents": 8000
+    },
+    "relevance": {
+      "DESK-HUB": 3
+    }
+  },
+  {
+    "id": "eval-07",
+    "split": "evaluation",
+    "query": "support lower back while working all day",
+    "filters": {
+      "category": "desk"
+    },
+    "relevance": {
+      "DESK-CHAIR": 3
+    }
+  },
+  {
+    "id": "eval-08",
+    "split": "evaluation",
+    "query": "DESK-ARM",
+    "filters": {
+      "in_stock": false
+    },
+    "relevance": {
+      "DESK-ARM": 3
+    }
+  },
+  {
+    "id": "eval-09",
+    "split": "evaluation",
+    "query": "keep backpack contents dry on a kayak",
+    "filters": {
+      "category": "travel"
+    },
+    "relevance": {
+      "TRV-DRY": 3
+    }
+  },
+  {
+    "id": "eval-10",
+    "split": "evaluation",
+    "query": "protect my computer on the commute",
+    "filters": {
+      "category": "travel",
+      "max_price_cents": 8000
+    },
+    "relevance": {
+      "TRV-LAPTOP": 3
+    }
+  },
+  {
+    "id": "eval-11",
+    "split": "evaluation",
+    "query": "use my charger in UK and European sockets",
+    "filters": {},
+    "relevance": {
+      "TRV-ADAPTER": 3
+    }
+  },
+  {
+    "id": "eval-12",
+    "split": "evaluation",
+    "query": "keep water cold on a day trip under 30 dollars",
+    "filters": {
+      "max_price_cents": 3000,
+      "in_stock": true
+    },
+    "relevance": {
+      "TRV-BOTTLE": 3
+    }
+  },
+  {
+    "id": "eval-13",
+    "split": "evaluation",
+    "query": "large desktop backup drive",
+    "filters": {
+      "category": "storage",
+      "in_stock": true
+    },
+    "relevance": {
+      "STO-HDD": 3,
+      "STO-SSD2": 2,
+      "STO-SSD1": 1
+    }
+  },
+  {
+    "id": "eval-14",
+    "split": "evaluation",
+    "query": "memory for action camera recording 4K",
+    "filters": {
+      "category": "storage"
+    },
+    "relevance": {
+      "STO-SD": 3
+    }
+  },
+  {
+    "id": "eval-15",
+    "split": "evaluation",
+    "query": "small external drive for editing videos on the road",
+    "filters": {
+      "category": "storage",
+      "in_stock": true
+    },
+    "relevance": {
+      "STO-SSD1": 3,
+      "STO-SSD2": 3
+    }
+  },
+  {
+    "id": "eval-16",
+    "split": "evaluation",
+    "query": "grind beans while camping without electricity",
+    "filters": {
+      "category": "kitchen"
+    },
+    "relevance": {
+      "KIT-HAND": 3
+    }
+  },
+  {
+    "id": "eval-17",
+    "split": "evaluation",
+    "query": "weigh coffee to a tenth of a gram",
+    "filters": {
+      "category": "kitchen",
+      "max_price_cents": 5000
+    },
+    "relevance": {
+      "KIT-SCALE": 3
+    }
+  },
+  {
+    "id": "eval-18",
+    "split": "evaluation",
+    "query": "snowboard bindings",
+    "filters": {
+      "category": "travel"
+    },
+    "relevance": {}
+  }
+]

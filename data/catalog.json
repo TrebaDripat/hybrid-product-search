@@ -1,0 +1,272 @@
+[
+  {
+    "id": "AUD-ANC",
+    "title": "Quiet over-ear headphones",
+    "category": "audio",
+    "price_cents": 12900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Active noise cancellation for aircraft cabins and shared offices. Wireless Bluetooth, padded ear cups, 35-hour battery, microphone."
+  },
+  {
+    "id": "AUD-STUDIO",
+    "title": "Wired studio headphones",
+    "category": "audio",
+    "price_cents": 8900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Closed-back monitoring headphones with a detachable 3.5 mm cable. Neutral sound for recording and mixing; no Bluetooth or active noise cancellation."
+  },
+  {
+    "id": "AUD-SPORT",
+    "title": "Waterproof sport earbuds",
+    "category": "audio",
+    "price_cents": 6800,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Secure ear hooks and IPX7 water resistance for running and gym workouts. Bluetooth charging case, eight-hour playback, no active noise cancellation."
+  },
+  {
+    "id": "AUD-OPEN",
+    "title": "Open-ear clip headphones",
+    "category": "audio",
+    "price_cents": 5500,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Lightweight ear clips leave the ear canal open so commuters can hear surrounding traffic. Bluetooth, sweat resistant, six-hour battery."
+  },
+  {
+    "id": "AUD-GAME",
+    "title": "USB gaming headset",
+    "category": "audio",
+    "price_cents": 4500,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Over-ear wired USB headset with a flexible boom microphone and physical mute switch for multiplayer games and video calls."
+  },
+  {
+    "id": "AUD-SPEAKER",
+    "title": "Portable waterproof speaker",
+    "category": "audio",
+    "price_cents": 4900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Compact Bluetooth loudspeaker with IP67 protection and carry loop for picnics, showers and poolside listening. Twelve-hour battery."
+  },
+  {
+    "id": "DESK-VERT",
+    "title": "Vertical ergonomic mouse",
+    "category": "desk",
+    "price_cents": 5900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Right-handed wireless vertical mouse keeps the wrist in a handshake position. Adjustable sensitivity and rechargeable USB-C battery."
+  },
+  {
+    "id": "DESK-MINI",
+    "title": "Compact wireless mouse",
+    "category": "desk",
+    "price_cents": 1900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Small ambidextrous travel mouse using a USB receiver. Silent buttons, one AA battery and a slim pouch; conventional horizontal grip."
+  },
+  {
+    "id": "DESK-HUB",
+    "title": "Eight-port USB-C hub",
+    "category": "desk",
+    "price_cents": 6900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Laptop adapter with one HDMI output supporting a single 4K monitor at 60 Hz, Ethernet, USB-A, SD card reader and 100 W charging passthrough."
+  },
+  {
+    "id": "DESK-DOCK",
+    "title": "Dual-display laptop dock",
+    "category": "desk",
+    "price_cents": 11900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "USB-C docking station for two external HDMI displays, wired Ethernet, four USB ports and 100 W laptop charging. Requires compatible display output on the laptop."
+  },
+  {
+    "id": "DESK-CHAIR",
+    "title": "Adjustable mesh office chair",
+    "category": "desk",
+    "price_cents": 24900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Breathable office chair with adjustable lumbar support, seat height and arm rests for long work sessions. Five-wheel base."
+  },
+  {
+    "id": "DESK-ARM",
+    "title": "Gas-spring monitor arm",
+    "category": "desk",
+    "price_cents": 9900,
+    "in_stock": false,
+    "currency": "USD",
+    "description": "Desk clamp mount for one 17 to 32 inch monitor. VESA 75 and 100 mm, adjustable height, tilt and swivel; frees desk space."
+  },
+  {
+    "id": "TRV-DRY",
+    "title": "Waterproof hiking daypack",
+    "category": "travel",
+    "price_cents": 7900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Twenty-litre roll-top dry backpack with welded seams for wet hikes and kayaking. No padded laptop sleeve."
+  },
+  {
+    "id": "TRV-LAPTOP",
+    "title": "Commuter laptop backpack",
+    "category": "travel",
+    "price_cents": 6400,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Twenty-two-litre bag with a padded 15 inch laptop compartment, organizer pockets and luggage strap. Water-resistant fabric, not submersible."
+  },
+  {
+    "id": "TRV-CASE",
+    "title": "Cabin rolling suitcase",
+    "category": "travel",
+    "price_cents": 14900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Hard-shell carry-on luggage with four spinner wheels and telescoping handle. Dimensions 55 by 40 by 20 cm; check airline allowances."
+  },
+  {
+    "id": "TRV-ADAPTER",
+    "title": "Universal travel plug adapter",
+    "category": "travel",
+    "price_cents": 3500,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Plug adapter for EU, UK, US and Australia sockets with USB charging ports. Does not convert mains voltage."
+  },
+  {
+    "id": "TRV-BOTTLE",
+    "title": "Insulated steel water bottle",
+    "category": "travel",
+    "price_cents": 2400,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Leakproof 750 ml vacuum flask keeps drinks cold for 24 hours or hot for 12 hours. Reusable stainless steel bottle for day trips."
+  },
+  {
+    "id": "TRV-POWER",
+    "title": "65 W laptop power bank",
+    "category": "travel",
+    "price_cents": 8900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "20000 mAh portable battery with 65 W USB-C Power Delivery for compatible laptops and phones. Charge status display and included USB-C cable."
+  },
+  {
+    "id": "STO-SSD1",
+    "title": "Portable solid-state drive 1 TB",
+    "category": "storage",
+    "price_cents": 9900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Compact external SSD with USB-C, up to 1050 MB per second transfer, and shock-resistant housing. Fast storage for video projects on the move."
+  },
+  {
+    "id": "STO-HDD",
+    "title": "Desktop backup hard drive 4 TB",
+    "category": "storage",
+    "price_cents": 10900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "External USB spinning hard disk with four terabytes of capacity for scheduled desktop backups. Requires the included power adapter."
+  },
+  {
+    "id": "STO-SD",
+    "title": "MicroSD memory card 256 GB",
+    "category": "storage",
+    "price_cents": 2900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "U3 V30 microSD card for action cameras, drones and 4K recording. Includes a full-size SD adapter."
+  },
+  {
+    "id": "STO-USB",
+    "title": "USB flash drive 128 GB",
+    "category": "storage",
+    "price_cents": 1600,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Small USB-A memory stick for transferring documents between computers. Key-ring loop, capless design and no cable needed."
+  },
+  {
+    "id": "STO-NAS",
+    "title": "Two-bay network storage enclosure",
+    "category": "storage",
+    "price_cents": 24900,
+    "in_stock": false,
+    "currency": "USD",
+    "description": "Diskless NAS with two SATA bays, Ethernet, shared folders and scheduled backups for a home network. Hard drives are sold separately."
+  },
+  {
+    "id": "STO-SSD2",
+    "title": "Portable solid-state drive 2 TB",
+    "category": "storage",
+    "price_cents": 17900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Two-terabyte external SSD with USB-C and up to 1050 MB per second transfer. Compact fast storage for large photo and video libraries."
+  },
+  {
+    "id": "KIT-ESPRESSO",
+    "title": "Compact espresso machine",
+    "category": "kitchen",
+    "price_cents": 19900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Countertop pump espresso maker for ground coffee, with a milk steaming wand for cappuccinos. No built-in grinder."
+  },
+  {
+    "id": "KIT-POUR",
+    "title": "Glass pour-over coffee brewer",
+    "category": "kitchen",
+    "price_cents": 3900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Manual glass coffee dripper and 600 ml serving carafe. Uses paper filters and separately heated water; no electricity required."
+  },
+  {
+    "id": "KIT-BURR",
+    "title": "Electric burr coffee grinder",
+    "category": "kitchen",
+    "price_cents": 7900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Conical burr grinder with adjustable grind size for espresso and filter coffee. Electric motor and removable grounds container."
+  },
+  {
+    "id": "KIT-SCALE",
+    "title": "Precision coffee scale",
+    "category": "kitchen",
+    "price_cents": 2900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Digital scale with 0.1 gram resolution, two-kilogram capacity and a timer for repeatable coffee brewing. Rechargeable battery."
+  },
+  {
+    "id": "KIT-KETTLE",
+    "title": "Temperature-control gooseneck kettle",
+    "category": "kitchen",
+    "price_cents": 6900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Electric kettle with a narrow spout for precise pour-over coffee. Adjustable water temperature, 900 ml capacity and keep-warm mode."
+  },
+  {
+    "id": "KIT-HAND",
+    "title": "Manual burr coffee grinder",
+    "category": "kitchen",
+    "price_cents": 4900,
+    "in_stock": true,
+    "currency": "USD",
+    "description": "Hand-cranked stainless steel burr grinder with adjustable grind size. Portable coffee preparation for camping; no electric power needed."
+  }
+]
