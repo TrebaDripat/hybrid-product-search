@@ -21,6 +21,7 @@ def main():
     parser.add_argument(
         "--model-cache", type=Path, help="reuse a populated HF_HOME read-only/offline"
     )
+    parser.add_argument("--browser", action="store_true", help="run the Playwright explorer checks")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     project = "hybrid-smoke-" + uuid.uuid4().hex[:10]
@@ -87,6 +88,10 @@ def main():
             compose("up", "--detach", "--no-build", "--wait", "--wait-timeout", "600")
             health = get("/health")
             assert health["product_count"] == 30
+            if args.browser:
+                from check_explorer import check_explorer
+
+                check_explorer(base)
             assert "/search" in get("/openapi.json")["paths"]
             assert get("/models")["embedding"]["dimensions"] == 384
             response = search({"query": "noise cancelling headphones", "mode": "rerank"})

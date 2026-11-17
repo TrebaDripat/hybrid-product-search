@@ -20,10 +20,14 @@ model revisions, dataset hashes, retrieval parameters and environment details.
 docker compose up --build --detach --wait --wait-timeout 600
 ```
 
-Then open `http://127.0.0.1:8080/docs`. The first run downloads pinned model
-artifacts, indexes 30 synthetic products and warms both models. The API is bound
-to loopback; PostgreSQL stays on the internal Compose network. See the
-[operations guide](docs/operations.md) for shutdown, cache reuse and test commands.
+Open the [ranking explorer](http://127.0.0.1:8080/) and choose two methods to
+compare on the same query. Expand a result to inspect its scores, or open
+**Stage timings** to see where each request spent time. The first run downloads
+the pinned model files, indexes 30 products and warms both models.
+The API is bound to loopback. [API reference](http://127.0.0.1:8080/docs) ·
+[Operations guide](docs/operations.md)
+
+![The same camping query in full-text and BGE search, with candidate counts, timing and rank changes](docs/explorer.webp)
 
 ## Local development
 
