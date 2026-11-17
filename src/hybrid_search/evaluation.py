@@ -53,6 +53,7 @@ def evaluate(
     *,
     passes=1,
     manifest_path=None,
+    rerank_limit=None,
 ):
     if not 1 <= passes <= 20:
         raise ValueError("passes must be between 1 and 20")
@@ -72,7 +73,11 @@ def evaluate(
         raise ValueError("requested split is empty")
     for q in selected:
         request = SearchRequest(
-            query=q["query"], filters=q["filters"], k=k, candidate_limit=candidates
+            query=q["query"],
+            filters=q["filters"],
+            k=k,
+            candidate_limit=candidates,
+            rerank_limit=rerank_limit,
         )
         metrics([], q["relevance"], k)
         if any(
@@ -92,6 +97,7 @@ def evaluate(
                         filters=q["filters"],
                         k=k,
                         candidate_limit=candidates,
+                        rerank_limit=rerank_limit if mode == "rerank" else None,
                         mode=mode,
                     )
                 )
@@ -109,6 +115,8 @@ def evaluate(
                         relevant_count=sum(g > 0 for g in q["relevance"].values()),
                         metrics=metrics(ranking, q["relevance"], k),
                         elapsed_ms=response.elapsed_ms,
+                        reranked_count=response.reranked_count,
+                        timings_ms=response.timings_ms.model_dump(),
                     )
                 )
     aggregates = {}
@@ -155,6 +163,9 @@ def evaluate(
         split=split,
         k=k,
         candidate_limit=candidates,
+        rerank_depth=SearchRequest(
+            query="budget", k=k, candidate_limit=candidates, rerank_limit=rerank_limit
+        ).rerank_depth,
         rrf_constant=60,
         catalog_fingerprint=expected,
         dataset_sha256=hashes,

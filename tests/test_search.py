@@ -65,6 +65,37 @@ def test_exact_sku_keeps_first_place_through_fusion_and_reranking(store, models)
 
 
 @pytest.mark.integration
+def test_rerank_budget_bounds_real_pair_count_and_honors_requested_k(store, models):
+    store.index(PRODUCTS, models)
+    service = SearchService(store, models)
+    sizes = []
+
+    def score(query, docs):
+        sizes.append(len(docs))
+        return [0.0] * len(docs)
+
+    models.rerank = score
+    for options, expected in [
+        ({}, 8),
+        ({"rerank_limit": 30}, 30),
+        ({"k": 12}, 12),
+        ({"k": 2, "candidate_limit": 3}, 3),
+    ]:
+        request = SearchRequest(query="portable", **options)
+        result = service.search(request)
+        assert result.reranked_count == sizes[-1] == expected
+        assert result.candidate_count == request.candidate_limit
+        assert len(result.hits) == request.k
+        assert all(h.rerank_logit is not None for h in result.hits)
+    empty = service.search(SearchRequest(query="nothing", filters={"max_price_cents": 0}))
+    assert empty.hits == [] and empty.reranked_count == 0 and len(sizes) == 4
+    lexical = service.search(SearchRequest(query="headphones", mode="fts"))
+    assert (
+        lexical.reranked_count == 0 and lexical.timings_ms.encode == lexical.timings_ms.rerank == 0
+    )
+
+
+@pytest.mark.integration
 def test_index_reuse_price_updates_removal_and_model_mismatch(store, models):
     assert store.index(PRODUCTS, models)["embedded"] == len(PRODUCTS)
     assert store.index(PRODUCTS, models)["embedded"] == 0
