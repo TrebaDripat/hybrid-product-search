@@ -11,7 +11,8 @@ and images. No GPU or paid API is required. Docker builds locked Python
 dependencies; inference uses two CPU threads by default. PostgreSQL starts first,
 the one-shot indexer commits a complete catalog, and the API becomes ready after
 warming both models. Postgres is not published to the host; the API is published
-only on loopback. Open `http://127.0.0.1:8080/docs` for the interactive API.
+only on loopback. Open the explorer at `http://127.0.0.1:8080/`. The interactive
+API reference is at `http://127.0.0.1:8080/docs`.
 
 The disposable database password in Compose is public demo configuration, not a
 production credential. The application runs as UID 10001 with a read-only root
@@ -20,7 +21,7 @@ artifacts. Different model revisions require reindexing. A mismatched signature
 returns 503 rather than silently mixing embedding spaces.
 
 ```sh
-# Re-run indexing against the packaged catalog; unchanged vectors are reused.
+# Replaying the packaged catalog preserves its publication time.
 docker compose run --rm index
 # Stop the demo and keep both volumes.
 docker compose down
@@ -49,8 +50,16 @@ PostgreSQL tests: the fixtures truncate the demo's tables. CI always supplies on
 and runs all tests. Fixture models in those tests verify contracts, filtering,
 atomicity and snapshots; the separate Compose job runs the actual ONNX models.
 The Compose smoke checks all four modes, filters, invalid input, unchanged-index
-reuse and persisted results after restart. It removes only its unique project's
-containers/volumes. Images remain cached.
+reuse and persisted results after restart. It removes its unique project's
+containers and volumes. Images remain cached. To include the desktop and mobile
+Chromium checks used in CI, install Playwright in a separate host environment.
+
+```sh
+python3 -m venv .cache/browser-env
+.cache/browser-env/bin/pip install playwright==1.62.0
+.cache/browser-env/bin/python -m playwright install --with-deps --only-shell chromium
+.cache/browser-env/bin/python scripts/compose_smoke.py --browser
+```
 
 For a custom TLS proxy, a trusted CA bundle can be mounted temporarily during the
 build. Download models on the host with that CA and reuse the populated cache

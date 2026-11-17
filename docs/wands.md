@@ -15,6 +15,6 @@ uv run hybrid-search evaluate --catalog .cache/wands/fixed-v1/catalog.json \
   --output reports/local-wands.json
 ```
 
-The script verifies all three source files against pinned SHA-256 digests. The generated catalog and queries stay under `.cache/`. The comparison records their hashes, the upstream revision and product IDs so others can reproduce the run.
+The script verifies all three source files against pinned SHA-256 digests. It writes the selected catalog, queries, manifest and upstream license into `.cache/wands/fixed-v1/`. The paired reports retain input hashes, the upstream revision and the IDs of the ranked products. Add `--rerank-limit 30` to the evaluation command to repeat the full-depth comparison. [Measurements](quality.md) · [License text](licenses/WANDS.txt)
 
 Yan Chen, Shujian Liu, Zheng Liu, Weiyi Sun, Linas Baltrunas and Benjamin Schroeder, *WANDS: Dataset for Product Search Relevance Assessment*, ECIR 2022. [Upstream dataset](https://github.com/wayfair/WANDS/tree/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5) · [MIT license, Copyright (c) 2021 ecir2022](https://github.com/wayfair/WANDS/blob/3b74dcf4ba29ab8ff3e6a50b5b09fc627cb882b5/LICENSE)
