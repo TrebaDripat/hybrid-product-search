@@ -1,27 +1,21 @@
-# Retrieval contract
+# Retrieval and indexing
 
-1. Validate the complete synthetic catalog before writing anything.
-2. Index document text with E5's `passage: ` prefix and normalized mean pooling.
-   Query vectors use `query: `. PostgreSQL holds both the metadata and vectors.
-3. Apply category, price and availability filters to both candidate branches.
-   Retrieve lexical candidates with PostgreSQL FTS and dense candidates with
-   cosine distance. Fuse ranks with RRF (`k=60`) and deterministic ID tie-breaking.
-4. Rerank a bounded fused candidate set with BGE; return scores with their actual
-   meaning and provenance. Raw cross-encoder logits are not probabilities.
-5. Compare lexical, dense, hybrid and reranked results on the same fixed eligible
-   judgments. Report graded nDCG@k, reciprocal rank@k and binary Recall@k. Include
-   failed and zero-result queries; do not select only favorable cases.
+## How a query reaches the top five
 
-The demonstration uses English text, 384-dimensional E5 embeddings, one catalog
-and one currency (USD). Prices use integer cents. A model-signature mismatch must
-fail explicitly rather than query incompatible vectors. Ingestion publishes a
-whole validated catalog snapshot atomically and reuses vectors for unchanged
-embedding text. Search uses one database snapshot for both retrieval branches.
+1. The API validates the query, filters, requested result count and inference budget. Each search reads one repeatable-read PostgreSQL snapshot. Category, availability and price constraints apply in both candidate branches before either limit.
+2. The lexical branch prioritizes an eligible exact catalog ID, then matches containing all normalized terms. For an ordinary English phrase, PostgreSQL also retrieves partial matches and orders them by term coverage and text rank. Quoted phrases, `OR` and exclusions keep PostgreSQL web-search semantics within the lexical branch. The dense branch interprets the query as text.
+3. E5 encodes queries with the `query: ` prefix and products with `passage: `. Attention-mask mean pooling and L2 normalization produce 384-dimensional vectors. PostgreSQL retrieves the nearest products by cosine distance using pgvector.
+4. Fusion adds `weight / (60 + rank)` for each branch where a product appears. Dense candidates and strict lexical matches have weight 1. Partial lexical matches use the fraction of distinct normalized query terms present in the product. Ties break on product ID. An exact eligible ID stays first in FTS, hybrid and reranked results.
+5. BGE scores the leading fused candidates when `mode=rerank`. Its default depth is `min(candidate_limit, max(8, k))`, enough for one eight-pair batch at the default `k=5`. Callers can request any depth from `k` through `candidate_limit`. A BGE score is a raw logit. Its magnitude is meaningful within the model’s ordering of a given query.
 
-The small fixture may use PostgreSQL's exact sequential scan even though a cosine
-HNSW index is present. Approximate-index scale, multilingual relevance, production
-latency and business improvements require separate representative evaluation.
+Responses include the catalog fingerprint, candidates before the BGE cut, actual pairs scored, and wall time in query encoding, retrieval, fusion and reranking. Branch ranks and raw scores let the caller trace a result back to its candidate sources. The explorer compares two sequential requests and checks that their catalog fingerprints match.
 
-Model exports are pinned to immutable revisions, with the original model family
-identified in the code. Downloaded files are model weights/configuration only;
-remote Python code is never trusted or executed.
+## Publishing a catalog
+
+The indexer validates the entire snapshot, locks concurrent writers with a transaction-level advisory lock and compares the catalog fingerprint and embedding signature. Replaying an identical catalog performs zero product writes and preserves its publication time. A metadata-only change updates the row in PostgreSQL and keeps its existing vector there.
+
+New or changed embedding text is encoded in batches of 32 inside one transaction. Absent IDs are deleted and the catalog state is published in that transaction. A failure in a later batch rolls back earlier writes. Readers continue to see the previous committed snapshot. A model-signature change requires a rebuild before query vectors can be used in the new embedding space.
+
+## Operating scope
+
+This demonstration uses English catalogs and USD prices in integer cents. It ships with a cosine HNSW index. PostgreSQL may choose an exact sequential scan for small catalogs. The retained experiments cover pools of 30 and 875 products on one CPU host. HNSW recall at larger scale and latency under concurrent production traffic need different measurements. [Model revisions](../src/hybrid_search/models.json) · [Evaluation scope](evaluation.md)

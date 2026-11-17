@@ -22,15 +22,120 @@ def test_rrf_uses_ranks_and_deterministic_ties():
 
 
 @pytest.mark.integration
+def test_natural_language_backfill_preserves_web_operators_and_eligibility(store, models):
+    base = PRODUCTS[0]
+    rows = [
+        base.model_copy(
+            update={"id": sku, "title": title, "description": "cotton", "in_stock": stock}
+        )
+        for sku, title, stock in [
+            ("LOOM-A", "Amber falcon", True),
+            ("LOOM-B", "Amber", True),
+            ("LOOM-C", "Silent amber falcon", False),
+        ]
+    ]
+    store.index(rows, models)
+    service = SearchService(store, models)
+
+    def fts(query):
+        return service.search(
+            SearchRequest(query=query, mode="fts", filters={"in_stock": True})
+        ).hits
+
+    partial = fts("silent amber falcon")
+    assert [h.product.id for h in partial] == ["LOOM-A", "LOOM-B"]
+    assert [h.lexical_weight for h in partial] == pytest.approx([2 / 3, 1 / 3])
+    assert [h.product.id for h in fts('"amber falcon"')] == ["LOOM-A"]
+    assert [h.product.id for h in fts("amber -falcon")] == ["LOOM-B"]
+    assert {h.product.id for h in fts("amber OR yellow")} == {"LOOM-A", "LOOM-B"}
+    assert fts("the and of") == []
+
+
+@pytest.mark.integration
+def test_exact_sku_keeps_first_place_through_fusion_and_reranking(store, models):
+    store.index(PRODUCTS, models)
+    models.rerank = lambda query, docs: [float(i) for i, _ in enumerate(docs)]
+    for mode in ("fts", "hybrid", "rerank"):
+        result = SearchService(store, models).search(SearchRequest(query="desk-arm", mode=mode))
+        assert result.hits[0].product.id == "DESK-ARM"
+        filtered = SearchService(store, models).search(
+            SearchRequest(query="desk-arm", mode=mode, filters={"in_stock": True})
+        )
+        assert all(h.product.id != "DESK-ARM" for h in filtered.hits)
+
+
+@pytest.mark.integration
+def test_rerank_budget_bounds_real_pair_count_and_honors_requested_k(store, models):
+    store.index(PRODUCTS, models)
+    service = SearchService(store, models)
+    sizes = []
+
+    def score(query, docs):
+        sizes.append(len(docs))
+        return [0.0] * len(docs)
+
+    models.rerank = score
+    for options, expected in [
+        ({}, 8),
+        ({"rerank_limit": 30}, 30),
+        ({"k": 12}, 12),
+        ({"k": 2, "candidate_limit": 3}, 3),
+    ]:
+        request = SearchRequest(query="portable", **options)
+        result = service.search(request)
+        assert result.reranked_count == sizes[-1] == expected
+        assert result.candidate_count == request.candidate_limit
+        assert len(result.hits) == request.k
+        assert all(h.rerank_logit is not None for h in result.hits)
+    empty = service.search(SearchRequest(query="nothing", filters={"max_price_cents": 0}))
+    assert empty.hits == [] and empty.reranked_count == 0 and len(sizes) == 4
+    lexical = service.search(SearchRequest(query="headphones", mode="fts"))
+    assert (
+        lexical.reranked_count == 0 and lexical.timings_ms.encode == lexical.timings_ms.rerank == 0
+    )
+
+
+@pytest.mark.integration
 def test_index_reuse_price_updates_removal_and_model_mismatch(store, models):
     assert store.index(PRODUCTS, models)["embedded"] == len(PRODUCTS)
+    indexed_at = store.state(models.signature)["indexed_at"]
+    models.passages = lambda _: pytest.fail("unchanged text should never reach E5")
     assert store.index(PRODUCTS, models)["embedded"] == 0
+    assert store.state(models.signature)["indexed_at"] == indexed_at
     altered = [PRODUCTS[0].model_copy(update={"price_cents": 1}), *PRODUCTS[1:]]
     result = store.index(altered, models)
     assert result["embedded"] == 0 and result["updated"] == 1
     assert store.index(altered[:-1], models)["deleted"] == 1
     with pytest.raises(CatalogNotReady, match="model changed"):
         store.state("different-model")
+
+
+@pytest.mark.integration
+def test_bad_second_embedding_batch_rolls_back_first_batch_and_metadata(store, models):
+    original = store.index(PRODUCTS, models)
+    sale = PRODUCTS[0].model_copy(update={"price_cents": 3})
+    additions = [PRODUCTS[1].model_copy(update={"id": f"BATCH-{i:03}"}) for i in range(33)]
+    encode, sizes = models.passages, []
+
+    def fail_second(texts):
+        sizes.append(len(texts))
+        if len(sizes) == 2:
+            raise RuntimeError("model unavailable")
+        return encode(texts)
+
+    models.passages = fail_second
+    with pytest.raises(RuntimeError, match="unavailable"):
+        store.index([sale, *additions], models)
+    assert sizes == [32, 1]
+    assert store.state(models.signature)["catalog_fingerprint"] == original["catalog_fingerprint"]
+    with store.pool.connection() as connection:
+        assert connection.execute("SELECT count(*) AS n FROM products").fetchone()["n"] == len(
+            PRODUCTS
+        )
+        row = connection.execute(
+            "SELECT price_cents FROM products WHERE id=%s", (sale.id,)
+        ).fetchone()
+        assert row["price_cents"] == PRODUCTS[0].price_cents
 
 
 @pytest.mark.integration

@@ -1,8 +1,17 @@
+import json
 import math
 
 import pytest
 
-from hybrid_search.evaluation import metrics
+from hybrid_search.evaluation import dataset_info, metrics
+
+
+def test_dataset_attribution_rejects_changed_inputs(tmp_path):
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps({"name": "External", "synthetic": False, "sha256": {"q": "fixed"}}))
+    assert dataset_info(path, {"q": "fixed"})["synthetic"] is False
+    with pytest.raises(ValueError, match="hashes"):
+        dataset_info(path, {"q": "changed"})
 
 
 def test_metrics_match_hand_calculated_graded_example():

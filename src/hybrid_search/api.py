@@ -1,10 +1,12 @@
 import os
 import threading
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from psycopg_pool import PoolTimeout
 
 from hybrid_search.domain import SearchRequest
@@ -38,6 +40,13 @@ def create_app(service=None):
         "The demo has no authentication and should be bound to loopback.",
     )
     slots = threading.BoundedSemaphore(4)
+
+    assets = Path(__file__).with_name("static")
+    app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    def explorer():
+        return FileResponse(assets / "index.html")
 
     @app.exception_handler(CatalogNotReady)
     @app.exception_handler(psycopg.Error)

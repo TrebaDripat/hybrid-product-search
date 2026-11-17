@@ -1,0 +1,8 @@
+{
+  "name": "Synthetic catalog v1",
+  "synthetic": true,
+  "sha256": {
+    "catalog.json": "5b5a83a459aad945a22983f64a41921a1dff963ac280368e2628d530ce434925",
+    "queries.json": "1035131ac791493f709c7b00534a67b43241d85e9f6b6d203558a29f085e3d68"
+  }
+}

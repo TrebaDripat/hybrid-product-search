@@ -20,10 +20,17 @@ def main():
     search.add_argument("query")
     search.add_argument("--mode", choices=("fts", "dense", "hybrid", "rerank"), default="rerank")
     search.add_argument("--k", type=int, default=5)
+    search.add_argument("--candidate-limit", type=int, default=30)
+    search.add_argument(
+        "--rerank-limit", type=int, help="maximum query-document pairs scored by BGE"
+    )
     evaluation = commands.add_parser("evaluate")
     evaluation.add_argument("--catalog", type=Path, default=Path("data/catalog.json"))
     evaluation.add_argument("--queries", type=Path, default=Path("data/queries.json"))
     evaluation.add_argument("--split", choices=("development", "evaluation"), default="evaluation")
+    evaluation.add_argument("--manifest", type=Path, help="verify dataset identity and file hashes")
+    evaluation.add_argument("--passes", type=int, default=1, help="timed repetitions per query")
+    evaluation.add_argument("--rerank-limit", type=int, help="override the default BGE pair budget")
     evaluation.add_argument("--output", type=Path, required=True)
     serve = commands.add_parser("serve")
     serve.add_argument("--host", default="127.0.0.1")
@@ -53,11 +60,34 @@ def main():
         elif args.command == "search":
             result = (
                 SearchService(store, models)
-                .search(SearchRequest(query=args.query, mode=args.mode, k=args.k))
+                .search(
+                    SearchRequest(
+                        query=args.query,
+                        mode=args.mode,
+                        k=args.k,
+                        candidate_limit=args.candidate_limit,
+                        rerank_limit=args.rerank_limit,
+                    )
+                )
                 .model_dump()
             )
         else:
-            result = evaluate(SearchService(store, models), args.catalog, args.queries, args.split)
+            manifest = args.manifest
+            if (
+                manifest is None
+                and args.catalog == Path("data/catalog.json")
+                and args.queries == Path("data/queries.json")
+            ):
+                manifest = Path("data/manifest.json")
+            result = evaluate(
+                SearchService(store, models),
+                args.catalog,
+                args.queries,
+                args.split,
+                passes=args.passes,
+                manifest_path=manifest,
+                rerank_limit=args.rerank_limit,
+            )
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(result, indent=2) + "\n")
         print(json.dumps(result, indent=2))

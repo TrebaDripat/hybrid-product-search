@@ -1,5 +1,7 @@
 # Observed evaluation: 2026-11-17
 
+This record preserves the initial search implementation. A later experiment evaluated partial lexical matches and two BGE budgets on both this catalog and external Wayfair judgments. [Paired measurements](quality.md)
+
 [Raw per-query results](../reports/evaluation-2026-11-17.json) were generated from
 clean source commit `41c0e30`, with the previously frozen catalog and judgments.
 All 18 evaluation queries are included. Metrics are macro averages at k=5; one

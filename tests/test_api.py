@@ -24,6 +24,13 @@ def test_api_readiness_filters_validation_and_openapi(store, models):
         assert response.status_code == 200
         assert all(hit["product"]["category"] == "kitchen" for hit in response.json()["hits"])
         assert client.post("/search", json={"query": " "}).status_code == 422
+        assert client.post("/search", json={"query": "desk\x00lamp"}).status_code == 422
+        for fields in (
+            {"k": 5, "rerank_limit": 4},
+            {"candidate_limit": 6, "rerank_limit": 8},
+            {"mode": "dense", "rerank_limit": 8},
+        ):
+            assert client.post("/search", json={"query": "coffee", **fields}).status_code == 422
         assert (
             client.post("/search", json={"query": "x", "candidate_limit": 1, "k": 2}).status_code
             == 422
