@@ -22,6 +22,49 @@ def test_rrf_uses_ranks_and_deterministic_ties():
 
 
 @pytest.mark.integration
+def test_natural_language_backfill_preserves_web_operators_and_eligibility(store, models):
+    base = PRODUCTS[0]
+    rows = [
+        base.model_copy(
+            update={"id": sku, "title": title, "description": "cotton", "in_stock": stock}
+        )
+        for sku, title, stock in [
+            ("LOOM-A", "Amber falcon", True),
+            ("LOOM-B", "Amber", True),
+            ("LOOM-C", "Silent amber falcon", False),
+        ]
+    ]
+    store.index(rows, models)
+    service = SearchService(store, models)
+
+    def fts(query):
+        return service.search(
+            SearchRequest(query=query, mode="fts", filters={"in_stock": True})
+        ).hits
+
+    partial = fts("silent amber falcon")
+    assert [h.product.id for h in partial] == ["LOOM-A", "LOOM-B"]
+    assert [h.lexical_weight for h in partial] == pytest.approx([2 / 3, 1 / 3])
+    assert [h.product.id for h in fts('"amber falcon"')] == ["LOOM-A"]
+    assert [h.product.id for h in fts("amber -falcon")] == ["LOOM-B"]
+    assert {h.product.id for h in fts("amber OR yellow")} == {"LOOM-A", "LOOM-B"}
+    assert fts("the and of") == []
+
+
+@pytest.mark.integration
+def test_exact_sku_keeps_first_place_through_fusion_and_reranking(store, models):
+    store.index(PRODUCTS, models)
+    models.rerank = lambda query, docs: [float(i) for i, _ in enumerate(docs)]
+    for mode in ("fts", "hybrid", "rerank"):
+        result = SearchService(store, models).search(SearchRequest(query="desk-arm", mode=mode))
+        assert result.hits[0].product.id == "DESK-ARM"
+        filtered = SearchService(store, models).search(
+            SearchRequest(query="desk-arm", mode=mode, filters={"in_stock": True})
+        )
+        assert all(h.product.id != "DESK-ARM" for h in filtered.hits)
+
+
+@pytest.mark.integration
 def test_index_reuse_price_updates_removal_and_model_mismatch(store, models):
     assert store.index(PRODUCTS, models)["embedded"] == len(PRODUCTS)
     assert store.index(PRODUCTS, models)["embedded"] == 0

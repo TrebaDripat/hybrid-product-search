@@ -1,3 +1,4 @@
+import re
 from importlib.resources import files
 
 import numpy as np
@@ -10,6 +11,7 @@ from hybrid_search.domain import Product, fingerprint
 
 FIELDS = "id,title,description,category,price_cents,currency,in_stock"
 INDEX_LOCK = 740551
+WEB_OPERATORS = re.compile(r'"|(?:^|\s)-\S|\bOR\b', re.IGNORECASE)
 
 
 class CatalogNotReady(RuntimeError):
@@ -158,10 +160,25 @@ class Store:
             connection.execute("SET LOCAL hnsw.iterative_scan = 'strict_order'")
             state = self._state(connection, signature)
             if request.mode != "dense":
+                params["plain"] = not WEB_OPERATORS.search(request.query)
                 lexical = connection.execute(
-                    f"""SELECT {FIELDS},ts_rank_cd(searchable,q) AS score FROM products,
-                    websearch_to_tsquery('english',%(query)s) q
-                    WHERE {where} AND searchable @@ q ORDER BY score DESC,id LIMIT %(limit)s""",
+                    f"""WITH input AS (
+                        SELECT websearch_to_tsquery('english', %(query)s) AS strict,
+                               plainto_tsquery('english', %(query)s) AS all_terms,
+                               tsvector_to_array(to_tsvector('english', %(query)s)) AS terms
+                    ), q AS (
+                        SELECT strict, terms, CASE WHEN %(plain)s THEN
+                            replace(all_terms::text, ' & ', ' | ')::tsquery
+                            ELSE strict END AS matching FROM input
+                    ) SELECT {FIELDS}, ts_rank_cd(searchable, q.matching, 32) AS score,
+                        CASE WHEN id=upper(%(query)s) OR searchable @@ q.strict THEN 1.0
+                            ELSE (SELECT count(*)::float8 FROM unnest(q.terms) AS t(term)
+                                  WHERE t.term = ANY(tsvector_to_array(searchable)))
+                                 / greatest(cardinality(q.terms), 1) END AS lexical_weight
+                    FROM products CROSS JOIN q
+                    WHERE {where} AND (id=upper(%(query)s) OR searchable @@ q.matching)
+                    ORDER BY (id=upper(%(query)s)) DESC, (searchable @@ q.strict) DESC,
+                             lexical_weight DESC, score DESC, id LIMIT %(limit)s""",
                     params,
                 ).fetchall()
             if request.mode != "fts":
