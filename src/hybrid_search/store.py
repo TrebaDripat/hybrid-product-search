@@ -1,5 +1,6 @@
 import re
 from importlib.resources import files
+from itertools import batched
 
 import numpy as np
 import psycopg
@@ -74,53 +75,78 @@ class Store:
             # Serialize complete snapshots, including embedding generation. Readers
             # keep seeing the previous committed catalog while indexing runs.
             connection.execute("SELECT pg_advisory_xact_lock(%s)", (INDEX_LOCK,))
+            current = connection.execute(
+                "SELECT 1 FROM catalog_state WHERE singleton AND catalog_fingerprint=%s "
+                "AND embedding_signature=%s AND product_count=%s",
+                (catalog_hash, models.signature, len(products)),
+            ).fetchone()
+            if current:
+                return dict(
+                    products=len(products),
+                    embedded=0,
+                    updated=0,
+                    deleted=0,
+                    catalog_fingerprint=catalog_hash,
+                )
             old = {
                 row["id"]: row
-                for row in connection.execute(
-                    "SELECT id,embedding_hash,content_hash,embedding FROM products"
-                )
+                for row in connection.execute("SELECT id,embedding_hash,content_hash FROM products")
             }
-            embedding_hashes = {
-                p.id: fingerprint([models.signature, p.document()]) for p in products
-            }
-            changed = [
-                p
-                for p in products
-                if old.get(p.id, {}).get("embedding_hash") != embedding_hashes[p.id]
-            ]
-            vectors = validate_vectors(
-                models.passages([p.document() for p in changed]), len(changed)
-            )
-            fresh = dict(zip((p.id for p in changed), vectors, strict=True))
-            updated = 0
-            for p in products:
-                content_hash = fingerprint(p.model_dump())
-                if p.id not in fresh and old[p.id]["content_hash"] == content_hash:
-                    continue
-                vector = fresh[p.id] if p.id in fresh else old[p.id]["embedding"]
-                connection.execute(
-                    """INSERT INTO products(id,title,description,category,price_cents,currency,
-                       in_stock,embedding,embedding_hash,content_hash)
-                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                       ON CONFLICT(id) DO UPDATE SET title=excluded.title,
-                       description=excluded.description,category=excluded.category,
-                       price_cents=excluded.price_cents,currency=excluded.currency,
-                       in_stock=excluded.in_stock,embedding=excluded.embedding,
-                       embedding_hash=excluded.embedding_hash,content_hash=excluded.content_hash""",
-                    (
-                        p.id,
-                        p.title,
-                        p.description,
-                        p.category,
-                        p.price_cents,
-                        p.currency,
-                        p.in_stock,
-                        vector,
-                        embedding_hashes[p.id],
-                        content_hash,
-                    ),
+            encode, metadata = [], []
+            for product in products:
+                previous = old.get(product.id, {})
+                text_hash = fingerprint([models.signature, product.document()])
+                row_hash = fingerprint(product.model_dump())
+                if previous.get("embedding_hash") != text_hash:
+                    encode.append((product, text_hash, row_hash))
+                elif previous["content_hash"] != row_hash:
+                    metadata.append(
+                        (
+                            product.title,
+                            product.description,
+                            product.category,
+                            product.price_cents,
+                            product.currency,
+                            product.in_stock,
+                            row_hash,
+                            product.id,
+                        )
+                    )
+            with connection.cursor() as cursor:
+                cursor.executemany(
+                    """UPDATE products SET title=%s,description=%s,category=%s,price_cents=%s,
+                       currency=%s,in_stock=%s,content_hash=%s WHERE id=%s""",
+                    metadata,
                 )
-                updated += 1
+                for batch in batched(encode, 32):
+                    vectors = validate_vectors(
+                        models.passages([p.document() for p, _, _ in batch]), len(batch)
+                    )
+                    cursor.executemany(
+                        """INSERT INTO products(id,title,description,category,price_cents,currency,
+                           in_stock,embedding,embedding_hash,content_hash)
+                           VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                           ON CONFLICT(id) DO UPDATE SET title=excluded.title,
+                           description=excluded.description,category=excluded.category,
+                           price_cents=excluded.price_cents,currency=excluded.currency,
+                           in_stock=excluded.in_stock,embedding=excluded.embedding,
+                           embedding_hash=excluded.embedding_hash,content_hash=excluded.content_hash""",
+                        [
+                            (
+                                p.id,
+                                p.title,
+                                p.description,
+                                p.category,
+                                p.price_cents,
+                                p.currency,
+                                p.in_stock,
+                                vector,
+                                text_hash,
+                                row_hash,
+                            )
+                            for (p, text_hash, row_hash), vector in zip(batch, vectors, strict=True)
+                        ],
+                    )
             deleted = connection.execute(
                 "DELETE FROM products WHERE NOT (id = ANY(%s))", ([p.id for p in products],)
             ).rowcount
@@ -134,8 +160,8 @@ class Store:
             )
         return dict(
             products=len(products),
-            embedded=len(changed),
-            updated=updated,
+            embedded=len(encode),
+            updated=len(encode) + len(metadata),
             deleted=deleted,
             catalog_fingerprint=catalog_hash,
         )

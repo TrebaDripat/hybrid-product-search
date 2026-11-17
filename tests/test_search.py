@@ -98,13 +98,44 @@ def test_rerank_budget_bounds_real_pair_count_and_honors_requested_k(store, mode
 @pytest.mark.integration
 def test_index_reuse_price_updates_removal_and_model_mismatch(store, models):
     assert store.index(PRODUCTS, models)["embedded"] == len(PRODUCTS)
+    indexed_at = store.state(models.signature)["indexed_at"]
+    models.passages = lambda _: pytest.fail("unchanged text should never reach E5")
     assert store.index(PRODUCTS, models)["embedded"] == 0
+    assert store.state(models.signature)["indexed_at"] == indexed_at
     altered = [PRODUCTS[0].model_copy(update={"price_cents": 1}), *PRODUCTS[1:]]
     result = store.index(altered, models)
     assert result["embedded"] == 0 and result["updated"] == 1
     assert store.index(altered[:-1], models)["deleted"] == 1
     with pytest.raises(CatalogNotReady, match="model changed"):
         store.state("different-model")
+
+
+@pytest.mark.integration
+def test_bad_second_embedding_batch_rolls_back_first_batch_and_metadata(store, models):
+    original = store.index(PRODUCTS, models)
+    sale = PRODUCTS[0].model_copy(update={"price_cents": 3})
+    additions = [PRODUCTS[1].model_copy(update={"id": f"BATCH-{i:03}"}) for i in range(33)]
+    encode, sizes = models.passages, []
+
+    def fail_second(texts):
+        sizes.append(len(texts))
+        if len(sizes) == 2:
+            raise RuntimeError("model unavailable")
+        return encode(texts)
+
+    models.passages = fail_second
+    with pytest.raises(RuntimeError, match="unavailable"):
+        store.index([sale, *additions], models)
+    assert sizes == [32, 1]
+    assert store.state(models.signature)["catalog_fingerprint"] == original["catalog_fingerprint"]
+    with store.pool.connection() as connection:
+        assert connection.execute("SELECT count(*) AS n FROM products").fetchone()["n"] == len(
+            PRODUCTS
+        )
+        row = connection.execute(
+            "SELECT price_cents FROM products WHERE id=%s", (sale.id,)
+        ).fetchone()
+        assert row["price_cents"] == PRODUCTS[0].price_cents
 
 
 @pytest.mark.integration
