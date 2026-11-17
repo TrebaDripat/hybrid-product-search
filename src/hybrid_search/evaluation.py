@@ -10,6 +10,8 @@ from pathlib import Path
 from hybrid_search.domain import SearchRequest, fingerprint, parse_catalog
 from hybrid_search.models import SPECS
 
+MODES = ("fts", "dense", "hybrid", "rerank")
+
 
 def metrics(ranking: list[str], relevance: dict[str, int], k: int) -> dict[str, float]:
     if k < 1 or len(set(ranking)) != len(ranking):
@@ -32,7 +34,33 @@ def percentile(values, percent):
     return sorted(values)[math.ceil(len(values) * percent / 100) - 1]
 
 
-def evaluate(service, catalog_path: Path, queries_path: Path, split: str, k=5, candidates=30):
+def dataset_info(manifest_path, hashes):
+    if manifest_path is None:
+        return {"name": "Custom catalog", "synthetic": None}
+    manifest = json.loads(manifest_path.read_text())
+    if manifest["sha256"] != hashes:
+        raise ValueError("dataset manifest hashes do not match the catalog and queries")
+    return manifest
+
+
+def evaluate(
+    service,
+    catalog_path: Path,
+    queries_path: Path,
+    split: str,
+    k=5,
+    candidates=30,
+    *,
+    passes=1,
+    manifest_path=None,
+):
+    if not 1 <= passes <= 20:
+        raise ValueError("passes must be between 1 and 20")
+    hashes = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in (catalog_path, queries_path)
+    }
+    dataset = dataset_info(manifest_path, hashes)
     products = parse_catalog(json.loads(catalog_path.read_text()))
     by_id = {p.id: p for p in products}
     expected = fingerprint([p.model_dump() for p in products])
@@ -54,32 +82,37 @@ def evaluate(service, catalog_path: Path, queries_path: Path, split: str, k=5, c
             raise ValueError("judgment references an absent or filtered-out product")
     service.models.warmup()
     samples = []
-    for q in selected:
-        for mode in ("fts", "dense", "hybrid", "rerank"):
-            response = service.search(
-                SearchRequest(
-                    query=q["query"],
-                    filters=q["filters"],
-                    k=k,
-                    candidate_limit=candidates,
-                    mode=mode,
+    for iteration in range(passes):
+        for index, q in enumerate(selected):
+            offset = (index + iteration) % len(MODES)
+            for mode in MODES[offset:] + MODES[:offset]:
+                response = service.search(
+                    SearchRequest(
+                        query=q["query"],
+                        filters=q["filters"],
+                        k=k,
+                        candidate_limit=candidates,
+                        mode=mode,
+                    )
                 )
-            )
-            if response.catalog_fingerprint != expected:
-                raise ValueError("evaluation catalog differs from indexed snapshot; reindex first")
-            ranking = [hit.product.id for hit in response.hits]
-            samples.append(
-                dict(
-                    query_id=q["id"],
-                    mode=mode,
-                    ranking=ranking,
-                    relevant_count=sum(g > 0 for g in q["relevance"].values()),
-                    metrics=metrics(ranking, q["relevance"], k),
-                    elapsed_ms=response.elapsed_ms,
+                if response.catalog_fingerprint != expected:
+                    raise ValueError(
+                        "evaluation catalog differs from indexed snapshot; reindex first"
+                    )
+                ranking = [hit.product.id for hit in response.hits]
+                samples.append(
+                    dict(
+                        iteration=iteration + 1,
+                        query_id=q["id"],
+                        mode=mode,
+                        ranking=ranking,
+                        relevant_count=sum(g > 0 for g in q["relevance"].values()),
+                        metrics=metrics(ranking, q["relevance"], k),
+                        elapsed_ms=response.elapsed_ms,
+                    )
                 )
-            )
     aggregates = {}
-    for mode in ("fts", "dense", "hybrid", "rerank"):
+    for mode in MODES:
         mode_samples = [s for s in samples if s["mode"] == mode]
         aggregates[mode] = {
             **{
@@ -88,9 +121,10 @@ def evaluate(service, catalog_path: Path, queries_path: Path, split: str, k=5, c
             },
             "latency_p50_ms": percentile([s["elapsed_ms"] for s in mode_samples], 50),
             "latency_p95_ms": percentile([s["elapsed_ms"] for s in mode_samples], 95),
-            "queries": len(mode_samples),
-            "queries_without_relevant_products": sum(
-                s["relevant_count"] == 0 for s in mode_samples
+            "queries": len(selected),
+            "measurements": len(mode_samples),
+            "queries_without_relevant_products": len(
+                {s["query_id"] for s in mode_samples if s["relevant_count"] == 0}
             ),
         }
     environment = {
@@ -113,24 +147,23 @@ def evaluate(service, catalog_path: Path, queries_path: Path, split: str, k=5, c
     except (FileNotFoundError, subprocess.CalledProcessError):
         source = {"git_revision": "unavailable in this deployment"}
     return dict(
-        report_version=1,
-        synthetic=True,
+        report_version=2,
+        dataset=dataset,
+        synthetic=dataset["synthetic"],
+        passes=passes,
         created_at_utc=datetime.now(UTC).isoformat(),
         split=split,
         k=k,
         candidate_limit=candidates,
         rrf_constant=60,
         catalog_fingerprint=expected,
-        dataset_sha256={
-            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in (catalog_path, queries_path)
-        },
+        dataset_sha256=hashes,
         models=SPECS,
         environment=environment,
         source=source,
         methodology="All selected queries included. Zero-relevance queries score zero. "
-        "Models warmed before timing; download/startup excluded. Single sequential run; "
-        "authored fixtures, not production traffic or independently judged relevance.",
+        "Sequential warmed CPU inference. Mode order rotates across queries and passes. "
+        "Latency includes query encoding, retrieval, fusion and any reranking.",
         aggregates=aggregates,
         samples=samples,
     )
