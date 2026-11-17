@@ -1,0 +1,1249 @@
+{
+  "report_version": 1,
+  "synthetic": true,
+  "created_at_utc": "2026-11-17T17:53:41.216156+00:00",
+  "split": "evaluation",
+  "k": 5,
+  "candidate_limit": 30,
+  "rrf_constant": 60,
+  "catalog_fingerprint": "9bec76371d5ef88865193e4238dc97ae3097eaf180df92be7aabcfa0b48ff45c",
+  "dataset_sha256": {
+    "catalog.json": "5b5a83a459aad945a22983f64a41921a1dff963ac280368e2628d530ce434925",
+    "queries.json": "1035131ac791493f709c7b00534a67b43241d85e9f6b6d203558a29f085e3d68"
+  },
+  "models": {
+    "embedding": {
+      "family": "intfloat/e5-small-v2",
+      "repository": "Xenova/e5-small-v2",
+      "revision": "02af79985278377e65c724a76275707cb0333c70",
+      "file": "onnx/model_quantized.onnx",
+      "dimensions": 384,
+      "max_tokens": 512,
+      "pooling": "attention_mask_mean_l2",
+      "query_prefix": "query: ",
+      "passage_prefix": "passage: "
+    },
+    "reranker": {
+      "family": "BAAI/bge-reranker-base",
+      "repository": "Xenova/bge-reranker-base",
+      "revision": "280bcc27a84e0b898c251e06fddb25171bd9b101",
+      "file": "onnx/model_quantized.onnx",
+      "max_tokens": 512,
+      "score": "raw_logit"
+    }
+  },
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14",
+    "onnx_threads": 2,
+    "cpu.max": "400000 100000",
+    "memory.max": "17179869184"
+  },
+  "source": {
+    "git_revision": "41c0e30d9d6f431695f58c726e7d1770bebbd94b",
+    "working_tree_dirty": false
+  },
+  "methodology": "All selected queries included. Zero-relevance queries score zero. Models warmed before timing; download/startup excluded. Single sequential run; authored fixtures, not production traffic or independently judged relevance.",
+  "aggregates": {
+    "fts": {
+      "ndcg": 0.1111111111111111,
+      "reciprocal_rank": 0.1111111111111111,
+      "recall": 0.1111111111111111,
+      "latency_p50_ms": 3.92,
+      "latency_p95_ms": 7.033,
+      "queries": 18,
+      "queries_without_relevant_products": 1
+    },
+    "dense": {
+      "ndcg": 0.9428956233229406,
+      "reciprocal_rank": 0.9444444444444444,
+      "recall": 0.9444444444444444,
+      "latency_p50_ms": 9.807,
+      "latency_p95_ms": 17.094,
+      "queries": 18,
+      "queries_without_relevant_products": 1
+    },
+    "hybrid": {
+      "ndcg": 0.9428956233229406,
+      "reciprocal_rank": 0.9444444444444444,
+      "recall": 0.9444444444444444,
+      "latency_p50_ms": 7.602,
+      "latency_p95_ms": 12.772,
+      "queries": 18,
+      "queries_without_relevant_products": 1
+    },
+    "rerank": {
+      "ndcg": 0.9417111852163388,
+      "reciprocal_rank": 0.9444444444444444,
+      "recall": 0.9444444444444444,
+      "latency_p50_ms": 179.094,
+      "latency_p95_ms": 1001.0,
+      "queries": 18,
+      "queries_without_relevant_products": 1
+    }
+  },
+  "samples": [
+    {
+      "query_id": "eval-01",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 7.033
+    },
+    {
+      "query_id": "eval-01",
+      "mode": "dense",
+      "ranking": [
+        "AUD-ANC",
+        "AUD-OPEN",
+        "AUD-GAME",
+        "AUD-STUDIO",
+        "AUD-SPEAKER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.413
+    },
+    {
+      "query_id": "eval-01",
+      "mode": "hybrid",
+      "ranking": [
+        "AUD-ANC",
+        "AUD-OPEN",
+        "AUD-GAME",
+        "AUD-STUDIO",
+        "AUD-SPEAKER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.288
+    },
+    {
+      "query_id": "eval-01",
+      "mode": "rerank",
+      "ranking": [
+        "AUD-ANC",
+        "AUD-OPEN",
+        "AUD-SPORT",
+        "AUD-STUDIO",
+        "AUD-SPEAKER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 281.885
+    },
+    {
+      "query_id": "eval-02",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 6.066
+    },
+    {
+      "query_id": "eval-02",
+      "mode": "dense",
+      "ranking": [
+        "AUD-OPEN",
+        "AUD-ANC",
+        "AUD-STUDIO",
+        "AUD-SPEAKER",
+        "AUD-GAME"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 15.464
+    },
+    {
+      "query_id": "eval-02",
+      "mode": "hybrid",
+      "ranking": [
+        "AUD-OPEN",
+        "AUD-ANC",
+        "AUD-STUDIO",
+        "AUD-SPEAKER",
+        "AUD-GAME"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.602
+    },
+    {
+      "query_id": "eval-02",
+      "mode": "rerank",
+      "ranking": [
+        "AUD-OPEN",
+        "AUD-STUDIO",
+        "AUD-SPEAKER",
+        "AUD-ANC",
+        "AUD-SPORT"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 147.089
+    },
+    {
+      "query_id": "eval-03",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.368
+    },
+    {
+      "query_id": "eval-03",
+      "mode": "dense",
+      "ranking": [
+        "AUD-GAME",
+        "AUD-SPEAKER",
+        "AUD-OPEN"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.504
+    },
+    {
+      "query_id": "eval-03",
+      "mode": "hybrid",
+      "ranking": [
+        "AUD-GAME",
+        "AUD-SPEAKER",
+        "AUD-OPEN"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.975
+    },
+    {
+      "query_id": "eval-03",
+      "mode": "rerank",
+      "ranking": [
+        "AUD-GAME",
+        "AUD-OPEN",
+        "AUD-SPEAKER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 112.801
+    },
+    {
+      "query_id": "eval-04",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.356
+    },
+    {
+      "query_id": "eval-04",
+      "mode": "dense",
+      "ranking": [
+        "AUD-SPEAKER",
+        "AUD-SPORT",
+        "AUD-GAME",
+        "AUD-ANC",
+        "AUD-STUDIO"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.03
+    },
+    {
+      "query_id": "eval-04",
+      "mode": "hybrid",
+      "ranking": [
+        "AUD-SPEAKER",
+        "AUD-SPORT",
+        "AUD-GAME",
+        "AUD-ANC",
+        "AUD-STUDIO"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.321
+    },
+    {
+      "query_id": "eval-04",
+      "mode": "rerank",
+      "ranking": [
+        "AUD-SPEAKER",
+        "AUD-STUDIO",
+        "AUD-OPEN",
+        "AUD-SPORT",
+        "AUD-ANC"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 921.499
+    },
+    {
+      "query_id": "eval-05",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.133
+    },
+    {
+      "query_id": "eval-05",
+      "mode": "dense",
+      "ranking": [
+        "DESK-DOCK",
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 17.094
+    },
+    {
+      "query_id": "eval-05",
+      "mode": "hybrid",
+      "ranking": [
+        "DESK-DOCK",
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.812
+    },
+    {
+      "query_id": "eval-05",
+      "mode": "rerank",
+      "ranking": [
+        "DESK-DOCK",
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 179.094
+    },
+    {
+      "query_id": "eval-06",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.231
+    },
+    {
+      "query_id": "eval-06",
+      "mode": "dense",
+      "ranking": [
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.773
+    },
+    {
+      "query_id": "eval-06",
+      "mode": "hybrid",
+      "ranking": [
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 11.951
+    },
+    {
+      "query_id": "eval-06",
+      "mode": "rerank",
+      "ranking": [
+        "DESK-HUB",
+        "DESK-VERT",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 89.268
+    },
+    {
+      "query_id": "eval-07",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.001
+    },
+    {
+      "query_id": "eval-07",
+      "mode": "dense",
+      "ranking": [
+        "DESK-CHAIR",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-HUB",
+        "DESK-DOCK"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.129
+    },
+    {
+      "query_id": "eval-07",
+      "mode": "hybrid",
+      "ranking": [
+        "DESK-CHAIR",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-HUB",
+        "DESK-DOCK"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.373
+    },
+    {
+      "query_id": "eval-07",
+      "mode": "rerank",
+      "ranking": [
+        "DESK-CHAIR",
+        "DESK-VERT",
+        "DESK-ARM",
+        "DESK-DOCK",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 149.317
+    },
+    {
+      "query_id": "eval-08",
+      "mode": "fts",
+      "ranking": [
+        "DESK-ARM"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 5.419
+    },
+    {
+      "query_id": "eval-08",
+      "mode": "dense",
+      "ranking": [
+        "DESK-ARM",
+        "STO-NAS"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.649
+    },
+    {
+      "query_id": "eval-08",
+      "mode": "hybrid",
+      "ranking": [
+        "DESK-ARM",
+        "STO-NAS"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 12.772
+    },
+    {
+      "query_id": "eval-08",
+      "mode": "rerank",
+      "ranking": [
+        "DESK-ARM",
+        "STO-NAS"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 75.686
+    },
+    {
+      "query_id": "eval-09",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.92
+    },
+    {
+      "query_id": "eval-09",
+      "mode": "dense",
+      "ranking": [
+        "TRV-DRY",
+        "TRV-LAPTOP",
+        "TRV-BOTTLE",
+        "TRV-ADAPTER",
+        "TRV-POWER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.807
+    },
+    {
+      "query_id": "eval-09",
+      "mode": "hybrid",
+      "ranking": [
+        "TRV-DRY",
+        "TRV-LAPTOP",
+        "TRV-BOTTLE",
+        "TRV-ADAPTER",
+        "TRV-POWER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.1
+    },
+    {
+      "query_id": "eval-09",
+      "mode": "rerank",
+      "ranking": [
+        "TRV-DRY",
+        "TRV-CASE",
+        "TRV-LAPTOP",
+        "TRV-ADAPTER",
+        "TRV-POWER"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 238.445
+    },
+    {
+      "query_id": "eval-10",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.296
+    },
+    {
+      "query_id": "eval-10",
+      "mode": "dense",
+      "ranking": [
+        "TRV-LAPTOP",
+        "TRV-ADAPTER",
+        "TRV-DRY",
+        "TRV-BOTTLE"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.518
+    },
+    {
+      "query_id": "eval-10",
+      "mode": "hybrid",
+      "ranking": [
+        "TRV-LAPTOP",
+        "TRV-ADAPTER",
+        "TRV-DRY",
+        "TRV-BOTTLE"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.559
+    },
+    {
+      "query_id": "eval-10",
+      "mode": "rerank",
+      "ranking": [
+        "TRV-LAPTOP",
+        "TRV-ADAPTER",
+        "TRV-DRY",
+        "TRV-BOTTLE"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 143.792
+    },
+    {
+      "query_id": "eval-11",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 5.086
+    },
+    {
+      "query_id": "eval-11",
+      "mode": "dense",
+      "ranking": [
+        "TRV-ADAPTER",
+        "TRV-POWER",
+        "DESK-HUB",
+        "TRV-BOTTLE",
+        "DESK-DOCK"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.112
+    },
+    {
+      "query_id": "eval-11",
+      "mode": "hybrid",
+      "ranking": [
+        "TRV-ADAPTER",
+        "TRV-POWER",
+        "DESK-HUB",
+        "TRV-BOTTLE",
+        "DESK-DOCK"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.436
+    },
+    {
+      "query_id": "eval-11",
+      "mode": "rerank",
+      "ranking": [
+        "TRV-ADAPTER",
+        "DESK-HUB",
+        "AUD-SPEAKER",
+        "AUD-SPORT",
+        "DESK-DOCK"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 1001.0
+    },
+    {
+      "query_id": "eval-12",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 6.847
+    },
+    {
+      "query_id": "eval-12",
+      "mode": "dense",
+      "ranking": [
+        "TRV-BOTTLE",
+        "STO-SD",
+        "DESK-MINI",
+        "KIT-SCALE",
+        "STO-USB"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.356
+    },
+    {
+      "query_id": "eval-12",
+      "mode": "hybrid",
+      "ranking": [
+        "TRV-BOTTLE",
+        "STO-SD",
+        "DESK-MINI",
+        "KIT-SCALE",
+        "STO-USB"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 6.494
+    },
+    {
+      "query_id": "eval-12",
+      "mode": "rerank",
+      "ranking": [
+        "TRV-BOTTLE",
+        "STO-USB",
+        "KIT-SCALE",
+        "STO-SD",
+        "DESK-MINI"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 185.344
+    },
+    {
+      "query_id": "eval-13",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 3,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 3.082
+    },
+    {
+      "query_id": "eval-13",
+      "mode": "dense",
+      "ranking": [
+        "STO-HDD",
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-SD"
+      ],
+      "relevant_count": 3,
+      "metrics": {
+        "ndcg": 0.9721212198129313,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.414
+    },
+    {
+      "query_id": "eval-13",
+      "mode": "hybrid",
+      "ranking": [
+        "STO-HDD",
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-SD"
+      ],
+      "relevant_count": 3,
+      "metrics": {
+        "ndcg": 0.9721212198129313,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.998
+    },
+    {
+      "query_id": "eval-13",
+      "mode": "rerank",
+      "ranking": [
+        "STO-HDD",
+        "STO-USB",
+        "STO-SSD2",
+        "STO-SSD1",
+        "STO-SD"
+      ],
+      "relevant_count": 3,
+      "metrics": {
+        "ndcg": 0.9508013338940989,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 147.566
+    },
+    {
+      "query_id": "eval-14",
+      "mode": "fts",
+      "ranking": [
+        "STO-SD"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 5.009
+    },
+    {
+      "query_id": "eval-14",
+      "mode": "dense",
+      "ranking": [
+        "STO-SD",
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-HDD"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.316
+    },
+    {
+      "query_id": "eval-14",
+      "mode": "hybrid",
+      "ranking": [
+        "STO-SD",
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-HDD"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 6.505
+    },
+    {
+      "query_id": "eval-14",
+      "mode": "rerank",
+      "ranking": [
+        "STO-SD",
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-HDD"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 194.867
+    },
+    {
+      "query_id": "eval-15",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 2,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 4.097
+    },
+    {
+      "query_id": "eval-15",
+      "mode": "dense",
+      "ranking": [
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-SD",
+        "STO-USB",
+        "STO-HDD"
+      ],
+      "relevant_count": 2,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 11.183
+    },
+    {
+      "query_id": "eval-15",
+      "mode": "hybrid",
+      "ranking": [
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-SD",
+        "STO-USB",
+        "STO-HDD"
+      ],
+      "relevant_count": 2,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 7.144
+    },
+    {
+      "query_id": "eval-15",
+      "mode": "rerank",
+      "ranking": [
+        "STO-SSD1",
+        "STO-SSD2",
+        "STO-USB",
+        "STO-HDD",
+        "STO-SD"
+      ],
+      "relevant_count": 2,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 184.249
+    },
+    {
+      "query_id": "eval-16",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 4.612
+    },
+    {
+      "query_id": "eval-16",
+      "mode": "dense",
+      "ranking": [
+        "KIT-HAND",
+        "KIT-BURR",
+        "KIT-ESPRESSO",
+        "KIT-KETTLE",
+        "KIT-SCALE"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 13.994
+    },
+    {
+      "query_id": "eval-16",
+      "mode": "hybrid",
+      "ranking": [
+        "KIT-HAND",
+        "KIT-BURR",
+        "KIT-ESPRESSO",
+        "KIT-KETTLE",
+        "KIT-SCALE"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.561
+    },
+    {
+      "query_id": "eval-16",
+      "mode": "rerank",
+      "ranking": [
+        "KIT-HAND",
+        "KIT-POUR",
+        "KIT-BURR",
+        "KIT-KETTLE",
+        "KIT-ESPRESSO"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 195.394
+    },
+    {
+      "query_id": "eval-17",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 4.458
+    },
+    {
+      "query_id": "eval-17",
+      "mode": "dense",
+      "ranking": [
+        "KIT-SCALE",
+        "KIT-POUR",
+        "KIT-HAND"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 15.879
+    },
+    {
+      "query_id": "eval-17",
+      "mode": "hybrid",
+      "ranking": [
+        "KIT-SCALE",
+        "KIT-POUR",
+        "KIT-HAND"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.705
+    },
+    {
+      "query_id": "eval-17",
+      "mode": "rerank",
+      "ranking": [
+        "KIT-SCALE",
+        "KIT-POUR",
+        "KIT-HAND"
+      ],
+      "relevant_count": 1,
+      "metrics": {
+        "ndcg": 1.0,
+        "reciprocal_rank": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 75.595
+    },
+    {
+      "query_id": "eval-18",
+      "mode": "fts",
+      "ranking": [],
+      "relevant_count": 0,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 2.672
+    },
+    {
+      "query_id": "eval-18",
+      "mode": "dense",
+      "ranking": [
+        "TRV-LAPTOP",
+        "TRV-BOTTLE",
+        "TRV-DRY",
+        "TRV-POWER",
+        "TRV-CASE"
+      ],
+      "relevant_count": 0,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 6.549
+    },
+    {
+      "query_id": "eval-18",
+      "mode": "hybrid",
+      "ranking": [
+        "TRV-LAPTOP",
+        "TRV-BOTTLE",
+        "TRV-DRY",
+        "TRV-POWER",
+        "TRV-CASE"
+      ],
+      "relevant_count": 0,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 5.739
+    },
+    {
+      "query_id": "eval-18",
+      "mode": "rerank",
+      "ranking": [
+        "TRV-DRY",
+        "TRV-ADAPTER",
+        "TRV-CASE",
+        "TRV-BOTTLE",
+        "TRV-POWER"
+      ],
+      "relevant_count": 0,
+      "metrics": {
+        "ndcg": 0.0,
+        "reciprocal_rank": 0.0,
+        "recall": 0.0
+      },
+      "elapsed_ms": 181.102
+    }
+  ]
+}
