@@ -102,6 +102,9 @@ def prepare(cache, output):
         for qid in query_ids
     ]
     output.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(
+        Path(__file__).resolve().parents[1] / "docs/licenses/WANDS.txt", output / "LICENSE"
+    )
     manifest = dict(
         name="Wayfair WANDS fixed pool v1",
         synthetic=False,

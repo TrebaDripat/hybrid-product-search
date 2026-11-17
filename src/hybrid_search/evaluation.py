@@ -43,6 +43,22 @@ def dataset_info(manifest_path, hashes):
     return manifest
 
 
+def source_info(module_path: Path):
+    directory = module_path.resolve().parent
+
+    def git(*args):
+        return subprocess.check_output(["git", *args], cwd=directory, stderr=subprocess.DEVNULL)
+
+    try:
+        git("ls-files", "--error-unmatch", "--", module_path.name)
+        return {
+            "git_revision": git("rev-parse", "HEAD").decode().strip(),
+            "working_tree_dirty": bool(git("status", "--porcelain")),
+        }
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return {"git_revision": "unavailable in this deployment"}
+
+
 def evaluate(
     service,
     catalog_path: Path,
@@ -144,16 +160,6 @@ def evaluate(
         path = Path("/sys/fs/cgroup") / name
         if path.exists():
             environment[name] = path.read_text().strip()
-    source = {}
-    try:
-        source = {
-            "git_revision": subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], text=True
-            ).strip(),
-            "working_tree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"])),
-        }
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        source = {"git_revision": "unavailable in this deployment"}
     return dict(
         report_version=2,
         dataset=dataset,
@@ -171,7 +177,7 @@ def evaluate(
         dataset_sha256=hashes,
         models=SPECS,
         environment=environment,
-        source=source,
+        source=source_info(Path(__file__)),
         methodology="All selected queries included. Zero-relevance queries score zero. "
         "Sequential warmed CPU inference. Mode order rotates across queries and passes. "
         "Latency includes query encoding, retrieval, fusion and any reranking.",
