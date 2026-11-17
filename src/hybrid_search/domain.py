@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+POSTGRES_TEXT = r"^[^\x00]+$"
+
 
 class Contract(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -11,10 +13,10 @@ class Contract(BaseModel):
 
 class Product(Contract):
     id: str = Field(pattern=r"^[A-Z0-9-]{1,64}$")
-    title: str = Field(min_length=1, max_length=200)
-    description: str = Field(min_length=1, max_length=2000)
+    title: str = Field(min_length=1, max_length=200, pattern=POSTGRES_TEXT)
+    description: str = Field(min_length=1, max_length=2000, pattern=POSTGRES_TEXT)
     category: str = Field(pattern=r"^[a-z0-9_-]{1,40}$")
-    price_cents: int = Field(ge=0, strict=True)
+    price_cents: int = Field(ge=0, le=2_147_483_647, strict=True)
     currency: Literal["USD"] = "USD"
     in_stock: bool
 
@@ -51,7 +53,7 @@ Mode = Literal["fts", "dense", "hybrid", "rerank"]
 
 
 class SearchRequest(Contract):
-    query: str = Field(min_length=1, max_length=300)
+    query: str = Field(min_length=1, max_length=300, pattern=POSTGRES_TEXT)
     mode: Mode = "rerank"
     k: int = Field(default=5, ge=1, le=20, strict=True)
     candidate_limit: int = Field(default=30, ge=1, le=100, strict=True)

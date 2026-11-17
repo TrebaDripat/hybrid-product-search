@@ -41,3 +41,17 @@ def test_bad_catalog_never_silently_drops_products():
         parse_catalog(rows + [rows[0]])
     with pytest.raises(ValueError, match="empty"):
         parse_catalog([])
+
+
+def test_catalog_validates_postgres_storage_limits_before_indexing():
+    product = json.loads((DATA / "catalog.json").read_text())[0]
+    for name, value in (
+        ("title", "Desk\x00lamp"),
+        ("description", "Light\x00source"),
+        ("price_cents", 2_147_483_648),
+    ):
+        with pytest.raises(ValidationError, match=name):
+            parse_catalog([{**product, name: value}])
+    assert (
+        parse_catalog([{**product, "price_cents": 2_147_483_647}])[0].price_cents == 2_147_483_647
+    )
